@@ -1,537 +1,939 @@
 ---
 layout: null
 ---
-
-
+   
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="content-language" content="en">
+    <meta name="robots" content="index, follow">
+    <meta name="rating" content="RTA-5042-1996-1400-1577-RTA">
     
-    <script>
-    (function() {
-        var hostname = location.hostname;
-        var parts = hostname.split(".");
-        var fullName = parts[0];
-        if (fullName.toLowerCase() === "www") fullName = parts[1] || fullName;
-        var formatText = function(str) {
-            return str.replace(/[-_]/g, " ").replace(/\+/g, " ").replace(/\b\w/g, function(c) { return c.toUpperCase(); });
-        };
-        var displayDomain = formatText(fullName);
-        document.title = displayDomain + " - Stunning Photo Collection";
-        var metaDesc = document.querySelector("meta[name=\"description\"]") || document.createElement("meta");
-        metaDesc.name = "description";
-        metaDesc.content = displayDomain + " - Discover breathtaking photography collections.";
-        if (!metaDesc.parentNode) document.head.appendChild(metaDesc);
-        var canonical = document.querySelector("link[rel=\"canonical\"]") || document.createElement("link");
-        canonical.setAttribute("rel", "canonical");
-        canonical.setAttribute("href", location.href);
-        if (!canonical.parentNode) document.head.appendChild(canonical);
-        var schemaData = {"@context":"https://schema.org","@type":"WebSite","name":displayDomain,"description":"Beautiful photo gallery","url":location.origin};
-        var schemaScript = document.createElement("script");
-        schemaScript.type = "application/ld+json";
-        schemaScript.textContent = JSON.stringify(schemaData);
-        document.head.appendChild(schemaScript);
-    })();
-    </script>
-
-    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
-
+    <link rel="canonical" id="dynamic-canonical" href="">
+    
+    <title id="dynamic-title">[ARCHIVE.DB] // VAULT OF RECORDS // v2.4</title>
+    <meta id="dynamic-description" name="description" content="Interactive database interface. Explore, collect, and discover. Inventory management system v2.4.">
+    
     <style>
-        /* ===== RESET & BASE ===== */
-        *,*::before,*::after{box-sizing:border-box}
-        html{overflow-x:hidden;background:#0a0a0f;scroll-behavior:smooth}
-        body{
-            width:100%;min-width:320px;max-width:100%;margin:0;padding:0;
-            background:#0a0a0f;font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,sans-serif;
-            color:#e0e0e0;line-height:1.4;-webkit-font-smoothing:antialiased;
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Share+Tech+Mono&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'VT323', monospace;
+            background: #0a0e1a;
+            color: #9bcd6c;
+            line-height: 1.5;
+            background-image: 
+                linear-gradient(rgba(0, 255, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 0, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
         }
-
-        /* ===== TOP BAR ===== */
-        .topbar{
-            width:100%;position:fixed;top:0;left:0;z-index:1000;
-            background:rgba(10,10,15,.95);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
-            border-bottom:1px solid rgba(245,158,11,.1);
-            padding:10px 16px;display:flex;align-items:center;gap:12px;
+        
+        /* Game UI Container */
+        .game-wrapper {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        .topbar-avatar{flex-shrink:0;line-height:0}
-        .topbar-avatar svg{width:30px;height:30px}
-        .topbar-title{
-            flex:1;font-size:15px;font-weight:700;color:#fff;letter-spacing:.3px;
-            white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+        
+        /* Status Bar */
+        .status-bar {
+            background: #0a0e1a;
+            border: 2px solid #2a3a2a;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.6rem;
+            box-shadow: 0 0 0 1px #1a2a1a;
         }
-        .topbar-menu{
-            width:38px;height:38px;flex-shrink:0;
-            background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);
-            cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;
-            border-radius:50%;transition:all .2s;
+        
+        .status-item {
+            display: flex;
+            gap: 12px;
         }
-        .topbar-menu:active{background:rgba(245,158,11,.2);transform:scale(.94)}
-        .topbar-menu svg{width:20px;height:20px;stroke:#f59e0b;fill:none;stroke-width:2;stroke-linecap:round}
-
-        .slide-panel{
-            display:none;position:fixed;top:50px;right:10px;z-index:999;
-            background:#1a1a20;border:1px solid rgba(245,158,11,.15);border-radius:14px;padding:6px;
-            min-width:200px;box-shadow:0 12px 40px rgba(0,0,0,.7);
+        
+        .status-label {
+            color: #5a7a5a;
         }
-        .slide-panel.open{display:block}
-        .slide-panel ul{list-style:none;margin:0;padding:0}
-        .slide-panel li+li{border-top:1px solid rgba(255,255,255,.03)}
-        .slide-panel a{
-            display:block;padding:13px 16px;color:#bbb;text-decoration:none;
-            font-size:14px;font-weight:500;border-radius:10px;transition:all .15s;
+        
+        .status-value {
+            color: #9bcd6c;
         }
-        .slide-panel a:active{background:rgba(245,158,11,.1);color:#f59e0b}
-
-        /* ===== DESKTOP NAV ===== */
-        .desktop-nav{display:none}
-
-        /* ===== AD CONTAINER ===== */
-        .ad-box{
-            display:flex;justify-content:center;align-items:center;
-            margin:0 auto;max-width:100%;overflow:hidden;
-            background:#111118;min-height:50px;border-radius:8px;
+        
+        /* Main Container - Game Window */
+        .game-window {
+            background: #0f1320;
+            border: 3px solid #2a3a2a;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 0 0 2px #1a2a1a;
+            padding: 24px;
+            position: relative;
         }
-        .ad-box ins{max-width:100%}
-        .ad-desktop{display:none}
-        .ad-mobile{display:flex}
-        .ad-both{display:flex}
-
-        .ad-banner-full{
-            padding:14px 8px;background:#111118;margin:0;
-            border-top:1px solid rgba(245,158,11,.06);
-            border-bottom:1px solid rgba(245,158,11,.06);
+        
+        .window-title {
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: #0f1320;
+            padding: 0 12px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.6rem;
+            color: #9bcd6c;
+            border: 1px solid #2a3a2a;
+            border-bottom: none;
         }
-        .ad-banner-full:first-child{margin-top:50px}
-
-        .ad-native{padding:8px 0;background:transparent}
-
-        /* ===== MAIN CONTENT ===== */
-        .main-content{width:100%;max-width:1200px;margin:0 auto;padding:0}
-
-        /* ===== HERO (16:9) ===== */
-        .hero-section{margin:0}
-        .hero-card{
-            position:relative;overflow:hidden;border-radius:0;
-            background:#111;margin:0;
-            aspect-ratio:16/9;
+        
+        /* Typography - Game Style */
+        h1 { 
+            font-size: 1.6rem; 
+            font-weight: normal;
+            line-height: 1.3;
+            font-family: 'Press Start 2P', monospace;
+            color: #9bcd6c;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 0 #2a5a2a;
+            letter-spacing: 1px;
         }
-        .hero-card a{display:block;width:100%;height:100%}
-        .hero-card img{
-            width:100%;height:100%;object-fit:cover;display:block;
-            transition:transform .5s ease;
+        
+        h2 { 
+            font-size: 0.9rem; 
+            font-weight: normal;
+            margin: 32px 0 16px 0;
+            font-family: 'Press Start 2P', monospace;
+            color: #7abd5c;
+            border-left: 4px solid #9bcd6c;
+            padding-left: 12px;
+            letter-spacing: 1px;
         }
-        .hero-card:hover img{transform:scale(1.02)}
-        .hero-overlay{
-            position:absolute;bottom:0;left:0;right:0;
-            padding:40px 16px 16px;
-            background:linear-gradient(to top, rgba(0,0,0,.9) 0%, rgba(0,0,0,.4) 50%, transparent 100%);
-            pointer-events:none;
+        
+        h3 { 
+            font-size: 0.8rem; 
+            font-weight: normal;
+            margin: 16px 0 8px 0;
+            font-family: 'Press Start 2P', monospace;
+            color: #9bcd6c;
         }
-        .hero-overlay h2{
-            margin:0 0 4px;font-size:22px;font-weight:800;color:#fff;line-height:1.2;
-            display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+        
+        /* Links - Hyperlink Style */
+        a { 
+            color: #7abd5c; 
+            text-decoration: none;
+            border-bottom: 1px dotted #3a5a3a;
+            transition: all 0.1s;
+            font-family: 'VT323', monospace;
+            font-size: 1rem;
         }
-        .hero-badge{
-            display:inline-block;padding:3px 8px;margin-bottom:6px;
-            background:#f59e0b;color:#000;font-size:10px;font-weight:700;
-            border-radius:3px;text-transform:uppercase;letter-spacing:.5px;
+        
+        a:hover { 
+            color: #cdff9c;
+            border-bottom-color: #9bcd6c;
+            text-shadow: 0 0 3px #9bcd6c;
         }
-
-        /* ===== SECTION HEADER ===== */
-        .section-header{
-            display:flex;align-items:center;gap:10px;padding:20px 12px 8px;
-            max-width:1200px;margin:0 auto;
+        
+        /* Breadcrumb - Directory Path */
+        .breadcrumb { 
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            color: #4a6a4a;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed #2a3a2a;
         }
-        .section-header h2{
-            margin:0;font-size:17px;font-weight:800;color:#fff;
-            display:flex;align-items:center;gap:8px;
+        
+        .breadcrumb a { color: #7abd5c; border-bottom: none; }
+        
+        /* Grid - Inventory Slots */
+        .grid-2, .grid-3, .grid-4 {
+            display: grid;
+            gap: 16px;
+            margin: 24px 0;
         }
-        .section-header h2 .icon-dot{
-            width:8px;height:8px;border-radius:50%;background:#f59e0b;
-            display:inline-block;flex-shrink:0;
+        .grid-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-4 { grid-template-columns: repeat(4, 1fr); }
+        @media (max-width: 1024px) { .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+        
+        /* Card - Item Slot */
+        .item-slot {
+            background: #0a0e1a;
+            border: 2px solid #2a3a2a;
+            padding: 16px;
+            transition: all 0.1s;
+            position: relative;
         }
-
-        /* ===== HORIZONTAL SCROLL (3:4 portrait) ===== */
-        .scroll-section{padding:0 0 0 12px}
-        .scroll-row{
-            display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;
-            -webkit-overflow-scrolling:touch;padding-bottom:8px;
-            scrollbar-width:none;
+        
+        .item-slot::before {
+            content: "[ITEM]";
+            position: absolute;
+            top: -10px;
+            left: 8px;
+            background: #0a0e1a;
+            padding: 0 6px;
+            font-size: 0.5rem;
+            font-family: 'Press Start 2P', monospace;
+            color: #5a7a5a;
         }
-        .scroll-row::-webkit-scrollbar{display:none}
-        .scroll-card{
-            flex:0 0 180px;scroll-snap-align:start;
-            position:relative;overflow:hidden;border-radius:10px;
-            background:#15151a;transition:all .2s;
-            aspect-ratio:3/4;
+        
+        .item-slot:hover {
+            border-color: #9bcd6c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(155,205,108,0.2);
         }
-        .scroll-card:active{transform:scale(.98)}
-        .scroll-card a{display:block;width:100%;height:100%}
-        .scroll-card img{
-            width:100%;height:100%;object-fit:cover;display:block;
-            transition:transform .4s ease;
+        
+        .item-slot h3 { margin-top: 8px; font-size: 0.7rem; }
+        
+        /* Stats Panel - Character Stats */
+        .stats-panel {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin: 24px 0;
+            padding: 16px;
+            background: #0a0e1a;
+            border: 2px solid #2a3a2a;
         }
-        .scroll-card-body{
-            position:absolute;bottom:0;left:0;right:0;
-            padding:20px 10px 8px;
-            background:linear-gradient(to top, rgba(0,0,0,.88) 0%, transparent 100%);
-            pointer-events:none;
+        
+        .stat {
+            flex: 1;
+            min-width: 80px;
+            text-align: center;
         }
-        .scroll-card-body h3{
-            margin:0 0 2px;font-size:12px;font-weight:700;color:#fff;
-            display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+        
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: normal;
+            font-family: 'Press Start 2P', monospace;
+            color: #9bcd6c;
+            display: block;
+            line-height: 1;
         }
-
-        /* ===== GRID (1:1 square) ===== */
-        .grid-section{padding:0 8px}
-        .grid-masonry{
-            display:grid;grid-template-columns:1fr 1fr;gap:6px;
-            max-width:1200px;margin:0 auto;
+        
+        .stat-label {
+            font-size: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #5a7a5a;
+            margin-top: 6px;
+            font-family: 'Press Start 2P', monospace;
         }
-        .grid-card{
-            position:relative;overflow:hidden;border-radius:8px;
-            background:#111118;transition:all .2s;
-            aspect-ratio:1/1;
+        
+        /* Quest Log Style */
+        .quest-log {
+            margin: 24px 0;
+            padding: 16px;
+            background: #0a0e1a;
+            border: 2px solid #2a3a2a;
         }
-        .grid-card:active{transform:scale(.98)}
-        .grid-card a{display:block;width:100%;height:100%}
-        .grid-card img{
-            width:100%;height:100%;object-fit:cover;display:block;
-            transition:transform .4s ease;
+        
+        .quest-entry {
+            display: flex;
+            gap: 16px;
+            padding: 12px 0;
+            border-bottom: 1px solid #1a2a1a;
         }
-        .grid-card-overlay{
-            position:absolute;bottom:0;left:0;right:0;
-            padding:20px 8px 8px;
-            background:linear-gradient(to top, rgba(0,0,0,.85) 0%, transparent 100%);
-            pointer-events:none;
+        
+        .quest-icon {
+            color: #9bcd6c;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.7rem;
         }
-        .grid-card-overlay h3{
-            margin:0 0 2px;font-size:11px;font-weight:700;color:#fff;
-            display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+        
+        /* Tag System - Item Tags */
+        .item-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 16px 0;
         }
-        .grid-card-overlay span{
-            font-size:8px;color:rgba(255,255,255,.4);display:block;margin-top:1px;
+        
+        .item-tag {
+            background: #0a0e1a;
+            border: 1px solid #2a3a2a;
+            padding: 2px 10px;
+            font-size: 0.6rem;
+            font-family: 'Share Tech Mono', monospace;
+            transition: all 0.1s;
         }
-
-        /* Iklan native di dalam grid */
-        .ad-native-card{
-            background:transparent;border-radius:8px;
-            display:flex;justify-content:center;align-items:center;
-            min-height:120px;aspect-ratio:1/1;
+        
+        .item-tag a {
+            border-bottom: none;
+            font-size: 0.6rem;
         }
-
-        /* ===== EMPTY STATE ===== */
-        .empty-section{
-            text-align:center;padding:60px 16px;
+        
+        .item-tag:hover {
+            border-color: #9bcd6c;
+            background: #1a2a1a;
         }
-        .empty-section p{
-            color:rgba(255,255,255,.3);font-size:14px;margin:0;
+        
+        /* Achievement Grid */
+        .achievement-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 20px 0;
         }
-
-        /* ============================
-           TABLET (min-width:600px)
-           ============================ */
-        @media(min-width:600px){
-            .ad-desktop{display:flex}
-            .ad-mobile{display:none}
-            .ad-both{display:flex}
-
-            .topbar{padding:12px 20px}
-            .topbar-title{font-size:16px}
-            .ad-banner-full:first-child{margin-top:54px}
-            .ad-banner-full{padding:16px 12px}
-            .hero-overlay{padding:50px 24px 20px}
-            .hero-overlay h2{font-size:28px}
-            .section-header{padding:24px 16px 10px}
-            .section-header h2{font-size:20px}
-            .scroll-card{flex:0 0 200px}
-            .scroll-card-body h3{font-size:13px}
-            .grid-masonry{grid-template-columns:repeat(3,1fr);gap:8px}
-            .grid-card{border-radius:10px}
-            .grid-card-overlay h3{font-size:13px}
-            .grid-card-overlay span{font-size:10px}
+        
+        .achievement {
+            background: #0a0e1a;
+            border: 1px solid #2a3a2a;
+            padding: 6px 14px;
+            font-size: 0.6rem;
+            font-family: 'Press Start 2P', monospace;
         }
-
-        /* ============================
-           DESKTOP (min-width:900px)
-           ============================ */
-        @media(min-width:900px){
-            body{max-width:1400px;margin:0 auto}
-            .topbar{
-                left:50%;transform:translateX(-50%);max-width:1400px;
-                padding:12px 24px;
-            }
-            .topbar-title{font-size:14px;font-weight:600;color:#ccc}
-            .topbar-menu{display:none}
-            .slide-panel{display:none!important}
-            .ad-banner-full:first-child{margin-top:56px}
-            .ad-banner-full{padding:18px 16px}
-
-            .hero-overlay{padding:60px 32px 24px}
-            .hero-overlay h2{font-size:36px}
-            .section-header{padding:28px 20px 12px}
-            .scroll-card{flex:0 0 220px}
-            .scroll-card:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,.5)}
-            .scroll-card:hover img{transform:scale(1.06)}
-            .scroll-card-body h3{font-size:14px}
-            .grid-masonry{grid-template-columns:repeat(4,1fr);gap:10px}
-            .grid-card{border-radius:12px}
-            .grid-card:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(0,0,0,.4)}
-            .grid-card:hover img{transform:scale(1.04)}
-            .grid-card-overlay h3{font-size:14px}
-            .grid-card-overlay span{font-size:10px}
-
-            .desktop-nav{
-                display:flex;gap:2px;padding:0 20px;max-width:1400px;margin:0 auto 6px;
-            }
-            .desktop-nav a{
-                padding:7px 14px;color:#999;text-decoration:none;font-size:12px;font-weight:500;
-                border-radius:6px;transition:all .15s;
-            }
-            .desktop-nav a:hover{color:#f59e0b;background:rgba(245,158,11,.06)}
+        
+        /* FAQ - Help Menu */
+        .help-menu {
+            margin: 24px 0;
+            padding: 16px;
+            background: #0a0e1a;
+            border: 2px solid #2a3a2a;
         }
-
-        @media(min-width:1100px){
-            .scroll-card{flex:0 0 240px}
-            .grid-masonry{grid-template-columns:repeat(5,1fr)}
+        
+        .help-item {
+            margin: 16px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid #1a2a1a;
+        }
+        
+        .help-question {
+            color: #9bcd6c;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.6rem;
+            margin-bottom: 8px;
+        }
+        
+        .help-answer {
+            font-size: 0.85rem;
+            color: #8aac7a;
+        }
+        
+        hr { 
+            border: none; 
+            border-top: 2px dashed #2a3a2a; 
+            margin: 32px 0; 
+        }
+        
+        .hidden { display: none; }
+        .query-placeholder { color: #cdff9c; background: #1a2a1a; padding: 2px 6px; font-family: monospace; }
+        .default-content.active { display: block; }
+        .default-content { display: none; }
+        #query-content { display: none; }
+        
+        .item-rarity {
+            display: inline-block;
+            font-size: 0.5rem;
+            background: #2a5a2a;
+            padding: 2px 6px;
+            margin-bottom: 8px;
+            font-family: 'Press Start 2P', monospace;
+        }
+        
+        .hp-bar {
+            height: 4px;
+            background: #2a3a2a;
+            margin-top: 12px;
+        }
+        
+        .hp-fill {
+            width: 100%;
+            height: 100%;
+            background: #9bcd6c;
+        }
+        
+        @media (max-width: 768px) {
+            .game-wrapper { padding: 12px; }
+            .game-window { padding: 20px; }
+            h1 { font-size: 1.2rem; }
+        }
+        
+        /* Blinking cursor effect */
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 14px;
+            background: #9bcd6c;
+            animation: blink 1s step-end infinite;
+            margin-left: 4px;
         }
     </style>
-    
+
+<meta name="juicyads-site-verification" content="1efb5198ec7aa6c9ec0721b881b74cef">
+
 {% include head.html %}
-{% include verif.html %}
+  </head>
+<body><div loading="lazy">
+<nav>
+{% include /kw/p/content.html %}
+</nav>
 
-</head>
-<body>
-
-    <!-- TOPBAR -->
-    <header class="topbar">
-        <div id="domainAvatar" class="topbar-avatar"></div>
-        <span id="blogMainTitle" class="topbar-title"></span>
-        <button class="topbar-menu" id="blogMenuToggle" aria-label="Menu">
-            <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-            <svg viewBox="0 0 24 24" style="display:none"><path d="M6 6l12 12M6 18l12-12"/></svg>
-        </button>
-    </header>
-
-    <!-- SLIDE PANEL -->
-    <nav id="blogMenuPanel" class="slide-panel">
-        <ul>
-            <li><a href="/">✦ Home</a></li>
-            <li><a href="/contact/">✉ Contact</a></li>
-            <li><a href="/privacy-policy/">🔒 Privacy</a></li>
-            <li><a href="/terms-and-conditions/">📋 Terms</a></li>
-        </ul>
-    </nav>
-
-    <script>
-    (function(){
-        var host = window.location.hostname.split(".");
-        var sub = host[0];
-        if (sub.toLowerCase() === "www") sub = host[1] || "";
-        var clean = sub.replace(/-/g, " ");
-        document.getElementById("blogMainTitle").textContent = clean.replace(/\b\w/g, function(c) { return c.toUpperCase(); });
-    })();
-    (function(){
-        var btn = document.getElementById("blogMenuToggle");
-        var panel = document.getElementById("blogMenuPanel");
-        var mi = btn.querySelector("svg:first-child");
-        var ci = btn.querySelector("svg:last-child");
-        btn.addEventListener("click", function(e){
-            e.stopPropagation();
-            var open = panel.classList.toggle("open");
-            mi.style.display = open ? "none" : "block";
-            ci.style.display = open ? "block" : "none";
-        });
-        document.addEventListener("click", function(e){
-            if(!panel.contains(e.target) && !btn.contains(e.target)){
-                panel.classList.remove("open");
-                mi.style.display = "block";ci.style.display = "none";
-            }
-        });
-        panel.addEventListener("click", function(e){e.stopPropagation();});
-    })();
-    </script>
-
-    <!-- AVATAR -->
+    <div class="game-wrapper">
+        <!-- STATUS BAR -->
+        <div class="status-bar">
+            <div class="status-item"><span class="status-label">[HP]</span><span class="status-value">██████████ 100%</span></div>
+            <div class="status-item"><span class="status-label">[XP]</span><span class="status-value">LVL.7 // 8472/10000</span></div>
+            <div class="status-item"><span class="status-label">[INV]</span><span class="status-value">15,247/50,000 SLOTS</span></div>
+            <div class="status-item"><span class="status-label">[CONN]</span><span class="status-value">STABLE</span></div>
+        </div>
+        
+        <!-- MAIN GAME WINDOW -->
+        <div class="game-window">
+            <div class="window-title">> ARCHIVE.DB v2.4</div>
+            
+            <!-- DEFAULT CONTENT - GAME START MENU -->
+            <div id="default-content" class="default-content active">
+                <h1 id="default-h1">╔══════════════════════╗<br>║  VAULT OF RECORDS   ║<br>║     [DATABASE]      ║<br>╚══════════════════════╝</h1>
+                <p style="font-size: 1rem; margin: 16px 0;">> Accessing main database...<span class="cursor"></span></p>
+                <p style="color: #6a8e5a;">> Welcome, Explorer. 15,247 items discovered. 3,892 video records. 9,456 image files.</p>
+                
+                <div class="stats-panel">
+                    <div class="stat"><span class="stat-number">15.2K</span><span class="stat-label">TOTAL ITEMS</span></div>
+                    <div class="stat"><span class="stat-number">3.9K</span><span class="stat-label">VIDEO DATA</span></div>
+                    <div class="stat"><span class="stat-number">9.5K</span><span class="stat-label">IMAGE DATA</span></div>
+                    <div class="stat"><span class="stat-number">1.9K</span><span class="stat-label">TEXT DATA</span></div>
+                </div>
+                
+                <!-- MAIN MENU OPTIONS -->
+                <h2 id="default-h2">> MAIN MENU</h2>
+                <div class="grid-3">
+                    <div class="item-slot">
+                        <div class="item-rarity">[COMMON]</div>
+                        <h3 id="default-h3-visual">VISUAL DATABASE</h3>
+                        <p style="font-size:0.8rem;">Image records • Photographic data</p>
+                        <div style="margin-top: 12px;"><a href="/media/?q=visual%20database">[ACCESS] →</a></div>
+                    </div>
+                    <div class="item-slot">
+                        <div class="item-rarity">[COMMON]</div>
+                        <h3 id="default-h3-video">VIDEO DATABASE</h3>
+                        <p style="font-size:0.8rem;">Motion records • Time-based data</p>
+                        <div style="margin-top: 12px;"><a href="/media/?q=video%20database">[ACCESS] →</a></div>
+                    </div>
+                    <div class="item-slot">
+                        <div class="item-rarity">[RARE]</div>
+                        <h3 id="default-h3-exclusive">EXCLUSIVE VAULT</h3>
+                        <p style="font-size:0.8rem;">Restricted items • Rare finds</p>
+                        <div style="margin-top: 12px;"><a href="/media/?q=exclusive%20vault">[ACCESS] →</a></div>
+                    </div>
+                </div>
+                
+                <!-- QUEST LOG - SUGGESTED QUERIES -->
+                <h2 id="default-h2-quests">> ACTIVE QUESTS</h2>
+                <div class="quest-log">
+                    <div class="quest-entry">
+                        <div class="quest-icon">[!]</div>
+                        <div class="quest-text">Explore <a href="/media/?q=celebrity%20database">CELEBRITY DATABASE</a> • 847 items</div>
+                    </div>
+                    <div class="quest-entry">
+                        <div class="quest-icon">[!]</div>
+                        <div class="quest-text">Investigate <a href="/media/?q=rare%20collection">RARE COLLECTION</a> • 203 items</div>
+                    </div>
+                    <div class="quest-entry">
+                        <div class="quest-icon">[!]</div>
+                        <div class="quest-text">Complete <a href="/media/?q=deleted%20content">DELETED CONTENT</a> • 1,247 items</div>
+                    </div>
+                    <div class="quest-entry">
+                        <div class="quest-icon">[!]</div>
+                        <div class="quest-text">Unlock <a href="/media/?q=exclusive%20items">EXCLUSIVE ITEMS</a> • 892 items</div>
+                    </div>
+                </div>
+                
+                <!-- PLATFORM LOCATIONS -->
+                <h2 id="default-h2-locations">> LOCATIONS / PLATFORMS</h2>
+                <div class="item-tags">
+                    <div class="item-tag"><a href="/media/?q=instagram%20archive">INSTAGRAM</a></div>
+                    <div class="item-tag"><a href="/media/?q=twitter%20archive">TWITTER</a></div>
+                    <div class="item-tag"><a href="/media/?q=tiktok%20archive">TIKTOK</a></div>
+                    <div class="item-tag"><a href="/media/?q=facebook%20archive">FACEBOOK</a></div>
+                    <div class="item-tag"><a href="/media/?q=discord%20archive">DISCORD</a></div>
+                    <div class="item-tag"><a href="/media/?q=telegram%20archive">TELEGRAM</a></div>
+                    <div class="item-tag"><a href="/media/?q=snapchat%20archive">SNAPCHAT</a></div>
+                </div>
+                
+                <!-- ACHIEVEMENTS -->
+                <h2 id="default-h2-achievements">> ACHIEVEMENTS</h2>
+                <div class="achievement-grid">
+                    <div class="achievement">🏆 DATA COLLECTOR</div>
+                    <div class="achievement">🏆 ARCHIVE MASTER</div>
+                    <div class="achievement">🏆 RARE HUNTER</div>
+                    <div class="achievement">🏆 COMPLETIONIST</div>
+                </div>
+                
+                <hr>
+                
+                <div class="help-menu" style="text-align: center;">
+                    <p style="color: #9bcd6c;">> ENTER COMMAND: <span style="color:#7abd5c;">[SEARCH] [NAME] [ITEM] [LOCATION]</span><span class="cursor"></span></p>
+                    <p style="margin-top: 12px; font-size:0.7rem;">> Type any name in the search bar to begin exploration.</p>
+                </div>
+                
+                <div class="hp-bar"><div class="hp-fill"></div></div>
+            </div>
+            
+            <!-- QUERY-BASED CONTENT - ENTITY DATABASE ENTRY -->
+            <div id="query-content" style="display: none;">
+                <div class="breadcrumb">
+                    > ROOT/ARCHIVE.DB/<span id="breadcrumb-name"></span>/ENTITY_DATA
+                </div>
+                
+                <!-- H1 DI ATAS, TIDAK ADA SECTION MENGHALANGI -->
+                <h1 id="main-heading"></h1>
+                <p id="entity-id" style="font-size: 0.7rem; color: #5a7a5a; margin-bottom: 16px;"></p>
+                
+                <!-- ENTITY STATS -->
+                <div class="stats-panel" id="entity-stats"></div>
+                
+                <!-- ITEM DESCRIPTION -->
+                <div class="quest-log" id="item-description"></div>
+                
+                <!-- ============================================
+                     INVENTORY SLOTS - AUTO GENERATED LINKS
+                     ============================================ -->
+                <h2 id="inventory-heading"></h2>
+                <div id="inventory-slots" class="grid-2"></div>
+                
+                <!-- ============================================
+                     LOCATION TAGS - AUTO GENERATED
+                     ============================================ -->
+                <h2 id="locations-heading"></h2>
+                <div id="location-tags" class="item-tags"></div>
+                
+                <!-- ============================================
+                     RELATED ITEMS - AUTO GENERATED
+                     ============================================ -->
+                <h2 id="related-heading"></h2>
+                <div id="related-items" class="item-tags"></div>
+                
+                <!-- ============================================
+                     QUEST LOG ENTRIES - AUTO GENERATED
+                     ============================================ -->
+                <h2 id="quests-heading"></h2>
+                <div id="quest-entries" class="quest-log"></div>
+                
+                <!-- ============================================
+                     ACHIEVEMENTS - AUTO GENERATED
+                     ============================================ -->
+                <h2 id="achievements-heading"></h2>
+                <div id="achievements-list" class="achievement-grid"></div>
+                
+                <!-- ============================================
+                     HELP MENU (FAQ) - AUTO GENERATED
+                     ============================================ -->
+                <h2 id="help-heading"></h2>
+                <div id="help-menu" class="help-menu"></div>
+                
+                <hr />
+                <center>{% include /ads/gobloggugel/nanouturfs.html %}</center>  
+                
+                <div class="hp-bar"><div class="hp-fill" style="width: 100%;"></div></div>
+                <div style="margin-top: 16px; font-size:0.6rem; text-align: center; color: #4a6a4a;">
+                    > DATABASE v2.4 // ENTITY LOADED // PRESS [SEARCH] FOR NEW QUERY
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <script>
     (function() {
-        var hostname = window.location.hostname;
-        var parts = hostname.split(".");
-        var fullName = parts[0];
-        if (fullName.toLowerCase() === "www") fullName = parts[1] || fullName;
-        function h(s) {var h=0;for(var i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0;}return Math.abs(h);}
-        var dh = h(fullName);
-        var clean = fullName.replace(/-/g," ");
-        var w = clean.split(" "), init = "";
-        for (var i=0;i<Math.min(w.length,3);i++){if(w[i].length>0)init+=w[i].charAt(0).toUpperCase();}
-        if(init.length<2)init=fullName.substring(0,3).toUpperCase();
-        document.getElementById("domainAvatar").innerHTML = "<svg width=\"30\" height=\"30\" viewBox=\"0 0 30 30\"><rect width=\"30\" height=\"30\" rx=\"8\" fill=\"#f59e0b\"/><text x=\"15\" y=\"20\" text-anchor=\"middle\" fill=\"#000\" font-size=\"12\" font-weight=\"bold\" font-family=\"sans-serif\">"+init+"</text></svg>";
+        // ============================================
+        // 1. SET CANONICAL URL (DINAMIS)
+        // ============================================
+        const setCanonicalUrl = () => {
+            const currentUrl = window.location.href;
+            const canonicalLink = document.getElementById('dynamic-canonical');
+            if (canonicalLink) {
+                canonicalLink.href = currentUrl;
+            }
+        };
+        
+        // ============================================
+        // 2. FUNGSI FORMAT SUBDOMAIN/DOMAIN UNTUK TITLE, H1, H2, H3
+        //    - Menggunakan hash dari (query + domain) agar KONSISTEN (tidak berubah saat refresh)
+        //    - Format: "Query on Domain" dengan variasi
+        // ============================================
+        function getFormattedSiteName() {
+            const hostname = window.location.hostname;
+            // Hapus www. jika ada
+            let cleanHost = hostname.replace(/^www\./i, '');
+            
+            // Pisahkan subdomain dan domain utama
+            const parts = cleanHost.split('.');
+            
+            let siteIdentifier = '';
+            
+            // Cek apakah ini subdomain (lebih dari 2 parts atau memiliki subdomain yang dikenali)
+            // Contoh: sub-domain.fazri.my -> sub-domain
+            //        fazri.my -> fazri
+            //        ini-sub.github.io -> ini-sub
+            //        acak-sub.pages.dev -> acak-sub
+            if (parts.length >= 3) {
+                // Ambil subdomain (part pertama)
+                siteIdentifier = parts[0];
+            } else if (parts.length === 2) {
+                // Domain utama tanpa subdomain, ambil part pertama (nama domain)
+                siteIdentifier = parts[0];
+            } else {
+                siteIdentifier = cleanHost;
+            }
+            
+            // Kapitalisasi huruf pertama setiap kata (pisahkan dengan strip/bukan)
+            const capitalizeWord = (str) => {
+                return str.split('-').map(word => 
+                    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                ).join(' ');
+            };
+            
+            return capitalizeWord(siteIdentifier);
+        }
+        
+        // Format query (kapitalisasi)
+        function formatQueryName(rawQuery) {
+            if (!rawQuery) return '';
+            return rawQuery.split(' ').map(word => 
+                word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+            ).join(' ');
+        }
+        
+        // Variasi pattern untuk title/H1/H2/H3 berdasarkan hash domain+query (konsisten)
+        function getTitlePattern(queryFormatted, siteFormatted, seed) {
+            const patterns = [
+                `${queryFormatted} on ${siteFormatted}`,
+                `${queryFormatted} — ${siteFormatted} Archive`,
+                `${queryFormatted} | ${siteFormatted} Database`,
+                `${queryFormatted} // ${siteFormatted} Vault`,
+                `${queryFormatted} › ${siteFormatted} Records`,
+                `${queryFormatted} @ ${siteFormatted}`,
+                `${siteFormatted} : ${queryFormatted}`,
+                `📀 ${queryFormatted} on ${siteFormatted}`,
+                `🎮 ${queryFormatted} — ${siteFormatted} Entity`
+            ];
+            // Gunakan seed untuk pilihan konsisten (tidak berubah refresh)
+            const index = seed % patterns.length;
+            return patterns[index];
+        }
+        
+        function getH1Pattern(queryFormatted, siteFormatted, seed) {
+            const patterns = [
+                `> ${queryFormatted} on ${siteFormatted}`,
+                `> ENTITY: ${queryFormatted} // ${siteFormatted}`,
+                `> ${queryFormatted} — ${siteFormatted} Database`,
+                `╔══════════════════════╗<br>║  ${queryFormatted.padEnd(18).substring(0,18)}  ║<br>║     ${siteFormatted.padEnd(18).substring(0,18)}     ║<br>╚══════════════════════╝`,
+                `> RECORD: ${queryFormatted} @ ${siteFormatted}`,
+                `[${queryFormatted.toUpperCase()}] on [${siteFormatted.toUpperCase()}]`,
+                `> ${queryFormatted} › ${siteFormatted}`,
+                `🎯 ${queryFormatted} | ${siteFormatted}`
+            ];
+            const index = seed % patterns.length;
+            return patterns[index];
+        }
+        
+        function getH2Pattern(queryFormatted, siteFormatted, seed, suffix) {
+            const patterns = [
+                `> ${suffix} — ${queryFormatted} on ${siteFormatted}`,
+                `> ${suffix} // ${queryFormatted} @ ${siteFormatted}`,
+                `> ${queryFormatted} : ${suffix}`,
+                `> [${siteFormatted.toUpperCase()}] ${suffix} — ${queryFormatted}`,
+                `> ${suffix} › ${queryFormatted}`,
+                `> DATABASE: ${queryFormatted} — ${suffix}`
+            ];
+            const index = (seed + suffix.length) % patterns.length;
+            return patterns[index];
+        }
+        
+        function getH3Pattern(queryFormatted, siteFormatted, seed, label) {
+            const patterns = [
+                `${label} — ${queryFormatted}`,
+                `${label} on ${siteFormatted}`,
+                `${queryFormatted} / ${label}`,
+                `📁 ${label} · ${queryFormatted}`,
+                `${label} › ${queryFormatted}`,
+                `> ${label} (${queryFormatted})`
+            ];
+            const index = (seed + label.length * 2) % patterns.length;
+            return patterns[index];
+        }
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        let query = urlParams.get('q');
+        
+        // Set canonical URL setelah DOM siap
+        setCanonicalUrl();
+        
+        if (!query) {
+            // TIDAK ADA QUERY: TAMPILKAN DEFAULT CONTENT
+            // Default content sudah memiliki title/h1/h2/h3 sendiri (tidak diubah)
+            document.getElementById('default-content').classList.add('active');
+            
+            // Update title default (tetap menggunakan ARCHIVE.DB)
+            document.getElementById('dynamic-title').innerHTML = '[ARCHIVE.DB] // VAULT OF RECORDS // v2.4';
+            return;
+        }
+        
+        // ADA QUERY: TAMPILKAN QUERY CONTENT
+        document.getElementById('default-content').classList.remove('active');
+        document.getElementById('default-content').style.display = 'none';
+        document.getElementById('query-content').style.display = 'block';
+        
+        query = decodeURIComponent(query.replace(/\+/g, ' '));
+        const queryFormatted = formatQueryName(query);
+        const siteFormatted = getFormattedSiteName();
+        
+        // Buat seed konsisten dari hostname + query (tidak berubah refresh)
+        let seed = 0;
+        const seedString = window.location.hostname + query.toLowerCase();
+        for (let i = 0; i < seedString.length; i++) {
+            seed = ((seed << 5) - seed) + seedString.charCodeAt(i);
+            seed |= 0;
+        }
+        seed = Math.abs(seed);
+        
+        // ============================================
+        // UPDATE <title>
+        // ============================================
+        const titleText = getTitlePattern(queryFormatted, siteFormatted, seed);
+        document.getElementById('dynamic-title').innerHTML = `${titleText} // ARCHIVE.DB`;
+        
+        // Update meta description (tetap relevan)
+        document.getElementById('dynamic-description').setAttribute('content', 
+            `${queryFormatted} on ${siteFormatted}: Database entity. ${Math.floor(Math.random() * 500) + 200} items discovered. Explore and collect.`);
+        
+        // ============================================
+        // UPDATE H1 (PALING ATAS, TIDAK ADA SECTION MENGHALANGI)
+        // ============================================
+        const h1Content = getH1Pattern(queryFormatted, siteFormatted, seed);
+        const mainHeading = document.getElementById('main-heading');
+        if (mainHeading) {
+            mainHeading.innerHTML = h1Content;
+        }
+        
+        // Breadcrumb name
+        const breadcrumbName = document.getElementById('breadcrumb-name');
+        if (breadcrumbName) {
+            breadcrumbName.textContent = queryFormatted.toLowerCase().replace(/ /g, '_');
+        }
+        
+        // Entity ID (tidak diubah, tetap random)
+        const entityCode = queryFormatted.substring(0, 4).toUpperCase() + Math.floor(Math.random() * 9000 + 1000);
+        const entityIdElem = document.getElementById('entity-id');
+        if (entityIdElem) {
+            entityIdElem.innerHTML = `ID: ${entityCode} | RARITY: ${['COMMON', 'UNCOMMON', 'RARE', 'EPIC'][Math.floor(Math.random() * 4)]} | LVL: ${Math.floor(Math.random() * 50 + 10)} | SITE: ${siteFormatted.toUpperCase()}`;
+        }
+        
+        // ============================================
+        // UPDATE H2 (SEMUA H2 DI QUERY CONTENT)
+        // ============================================
+        const inventoryHeading = document.getElementById('inventory-heading');
+        if (inventoryHeading) {
+            inventoryHeading.innerHTML = getH2Pattern(queryFormatted, siteFormatted, seed, 'INVENTORY');
+        }
+        
+        const locationsHeading = document.getElementById('locations-heading');
+        if (locationsHeading) {
+            locationsHeading.innerHTML = getH2Pattern(queryFormatted, siteFormatted, seed, 'LOCATIONS / PLATFORMS');
+        }
+        
+        const relatedHeading = document.getElementById('related-heading');
+        if (relatedHeading) {
+            relatedHeading.innerHTML = getH2Pattern(queryFormatted, siteFormatted, seed, 'RELATED ITEMS');
+        }
+        
+        const questsHeading = document.getElementById('quests-heading');
+        if (questsHeading) {
+            questsHeading.innerHTML = getH2Pattern(queryFormatted, siteFormatted, seed, 'ACTIVE QUESTS');
+        }
+        
+        const achievementsHeading = document.getElementById('achievements-heading');
+        if (achievementsHeading) {
+            achievementsHeading.innerHTML = getH2Pattern(queryFormatted, siteFormatted, seed, 'ACHIEVEMENTS');
+        }
+        
+        const helpHeading = document.getElementById('help-heading');
+        if (helpHeading) {
+            helpHeading.innerHTML = getH2Pattern(queryFormatted, siteFormatted, seed, 'HELP MENU');
+        }
+        
+        // ============================================
+        // UPDATE H3 (DALAM INVENTORY SLOTS - DYNAMIC)
+        // ============================================
+        // Random item counts
+        const itemCount = Math.floor(Math.random() * 600) + 200;
+        const videoCount = Math.floor(Math.random() * 120) + 30;
+        const imageCount = Math.floor(Math.random() * 500) + 150;
+        const textCount = Math.floor(Math.random() * 70) + 15;
+        
+        // Entity stats
+        const statsPanel = document.getElementById('entity-stats');
+        if (statsPanel) {
+            statsPanel.innerHTML = `
+                <div class="stat"><span class="stat-number">${itemCount}</span><span class="stat-label">TOTAL ITEMS</span></div>
+                <div class="stat"><span class="stat-number">${videoCount}</span><span class="stat-label">VIDEO DATA</span></div>
+                <div class="stat"><span class="stat-number">${imageCount}</span><span class="stat-label">IMAGE DATA</span></div>
+                <div class="stat"><span class="stat-number">${textCount}</span><span class="stat-label">TEXT DATA</span></div>
+            `;
+        }
+        
+        // Item description
+        const descriptions = [
+            `[ITEM DESCRIPTION] ${queryFormatted} data set contains ${itemCount} verified items across multiple categories. Rarity rating: ${['C', 'B', 'A', 'S'][Math.floor(Math.random() * 4)]} tier.`,
+            `[DATALOG] ${queryFormatted} entity discovered on ${siteFormatted}. Total items: ${itemCount}. Condition: VERIFIED.`,
+            `[RECORD] Complete ${queryFormatted} database entry for ${siteFormatted}. ${itemCount} items cataloged. ${videoCount} video files. ${imageCount} image files.`
+        ];
+        const descriptionDiv = document.getElementById('item-description');
+        if (descriptionDiv) {
+            descriptionDiv.innerHTML = `<div class="quest-entry"><div class="quest-icon">[i]</div><div class="quest-text">${descriptions[Math.floor(Math.random() * descriptions.length)]}</div></div>`;
+        }
+        
+        // ============================================
+        // INVENTORY SLOTS dengan H3 yang mengandung query + site
+        // ============================================
+        const inventoryItems = [
+            { label: "VISUAL DATA", query: "visual data", count: imageCount, rarity: "COMMON" },
+            { label: "VIDEO DATA", query: "video data", count: videoCount, rarity: "COMMON" },
+            { label: "TEXT DATA", query: "text data", count: textCount, rarity: "UNCOMMON" },
+            { label: "EXCLUSIVE ITEMS", query: "exclusive items", count: Math.floor(Math.random() * 50) + 10, rarity: "RARE" },
+            { label: "RARE FINDS", query: "rare finds", count: Math.floor(Math.random() * 30) + 5, rarity: "EPIC" },
+            { label: "LEGENDARY DATA", query: "legendary", count: Math.floor(Math.random() * 10) + 1, rarity: "LEGENDARY" }
+        ];
+        
+        const inventorySlots = document.getElementById('inventory-slots');
+        if (inventorySlots) {
+            inventorySlots.innerHTML = inventoryItems.map((item, idx) => {
+                const h3Text = getH3Pattern(queryFormatted, siteFormatted, seed, item.label);
+                return `
+                    <div class="item-slot">
+                        <div class="item-rarity">[${item.rarity}]</div>
+                        <h3>${h3Text}</h3>
+                        <p style="font-size:0.7rem;">${item.count} items • ${item.rarity} tier</p>
+                        <div style="margin-top: 12px;"><a href="/media/?q=${encodeURIComponent(queryFormatted + ' ' + item.query)}">[VIEW ITEMS] →</a></div>
+                        <div class="hp-bar" style="margin-top: 12px;"><div class="hp-fill" style="width: ${Math.min(100, (item.count / 500) * 100)}%"></div></div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // ============================================
+        // LOCATION TAGS (tanpa H3, hanya tag)
+        // ============================================
+        const locations = ['Instagram', 'Twitter', 'TikTok', 'Facebook', 'Discord', 'Telegram', 'Snapchat', 'YouTube', 'Reddit'];
+        const locationTags = document.getElementById('location-tags');
+        if (locationTags) {
+            locationTags.innerHTML = locations.map(loc => `
+                <div class="item-tag"><a href="/media/?q=${encodeURIComponent(queryFormatted + ' ' + loc.toLowerCase() + ' location')}">${loc.toUpperCase()}</a></div>
+            `).join('');
+        }
+        
+        // RELATED ITEMS (tag saja)
+        const relatedQueries = ['full collection', 'complete set', 'master database', 'all items', 'rare variants', 'exclusive drops', 'unlocked content', 'hidden data'];
+        const relatedItems = document.getElementById('related-items');
+        if (relatedItems) {
+            relatedItems.innerHTML = relatedQueries.map(rel => `
+                <div class="item-tag"><a href="/media/?q=${encodeURIComponent(queryFormatted + ' ' + rel)}">${rel.toUpperCase()}</a></div>
+            `).join('');
+        }
+        
+        // QUEST ENTRIES
+        const quests = [
+            { icon: "[!]", text: `Collect all ${itemCount} ${queryFormatted} items`, progress: "0/100%" },
+            { icon: "[?]", text: `Discover rare ${queryFormatted} variants on ${siteFormatted}`, progress: "0/12" },
+            { icon: "[★]", text: `Complete ${queryFormatted} database entry for ${siteFormatted}`, progress: "IN PROGRESS" },
+            { icon: "[✨]", text: `Unlock exclusive ${queryFormatted} content`, progress: "LOCKED" }
+        ];
+        const questEntries = document.getElementById('quest-entries');
+        if (questEntries) {
+            questEntries.innerHTML = quests.map(quest => `
+                <div class="quest-entry">
+                    <div class="quest-icon">${quest.icon}</div>
+                    <div class="quest-text">${quest.text} • ${quest.progress}</div>
+                </div>
+            `).join('');
+        }
+        
+        // ACHIEVEMENTS
+        const achievements = [
+            `🏆 DATA COLLECTOR: ${queryFormatted} Explorer on ${siteFormatted}`,
+            `🏆 ARCHIVE MASTER: ${queryFormatted} Completionist`,
+            `🏆 RARE HUNTER: ${queryFormatted} Rare Items`,
+            `🏆 VAULT KEEPER: ${queryFormatted} Guardian — ${siteFormatted}`
+        ];
+        const achievementsList = document.getElementById('achievements-list');
+        if (achievementsList) {
+            achievementsList.innerHTML = achievements.map(ach => `<div class="achievement">${ach}</div>`).join('');
+        }
+        
+        // HELP MENU
+        const helpItems = [
+            { q: `How to collect ${queryFormatted} items on ${siteFormatted}?`, 
+              a: `Use SEARCH command with item type. Example: "${queryFormatted} visual data". `,
+              links: ['visual data', 'video data'] },
+            { q: `What is ${queryFormatted} rarity tier on ${siteFormatted}?`, 
+              a: `Current tier: ${['C', 'B', 'A', 'S'][Math.floor(Math.random() * 4)]}. Higher tiers contain exclusive items. `,
+              links: ['rare finds', 'exclusive items'] },
+            { q: `How to unlock more ${queryFormatted} content?`, 
+              a: `Complete quests and achievements to unlock additional inventory slots for ${siteFormatted}. `,
+              links: ['complete collection', 'unlock content'] },
+            { q: `Where to find ${queryFormatted} items on ${siteFormatted}?`, 
+              a: `Items spawn across multiple platform locations. Check location tags above. `,
+              links: ['instagram location', 'twitter location'] }
+        ];
+        const helpMenu = document.getElementById('help-menu');
+        if (helpMenu) {
+            helpMenu.innerHTML = helpItems.map(help => {
+                const linkHtml = help.links.map(link => 
+                    `<a href="/media/?q=${encodeURIComponent(queryFormatted + ' ' + link)}">${link}</a>`
+                ).join(' • ');
+                return `
+                    <div class="help-item">
+                        <div class="help-question">> ${help.q}</div>
+                        <div class="help-answer">${help.a}</div>
+                        ${linkHtml ? `<div style="margin-top: 8px; font-size:0.6rem;">> RELATED: ${linkHtml}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // EXTRA: Additional inventory info
+        const extraItems = ['discovery log', 'collection status', 'completion rate', 'item tracker'];
+        if (statsPanel) {
+            let extraHtml = `
+                <div style="margin-top: 16px; width: 100%; border-top: 1px solid #2a3a2a; padding-top: 16px;">
+                    <div style="font-size:0.55rem; color:#5a7a5a; margin-bottom: 8px;">> QUICK COMMANDS:</div>
+                    <div class="item-tags" style="margin-top: 0;">
+                        ${extraItems.map(item => `<div class="item-tag"><a href="/media/?q=${encodeURIComponent(queryFormatted + ' ' + item)}">${item.toUpperCase()}</a></div>`).join('')}
+                    </div>
+                </div>
+            `;
+            statsPanel.innerHTML += extraHtml;
+        }
+        
+        // Completion progress bar
+        const completionRate = Math.floor(Math.random() * 100);
+        if (descriptionDiv) {
+            descriptionDiv.innerHTML += `
+                <div style="margin-top: 12px;">
+                    <div style="font-size:0.6rem; color:#5a7a5a;">> COLLECTION PROGRESS: ${completionRate}%</div>
+                    <div class="hp-bar" style="margin-top: 4px;"><div class="hp-fill" style="width: ${completionRate}%;"></div></div>
+                </div>
+            `;
+        }
+        
     })();
     </script>
+    
+    <br />
+    
 
-    <!-- BANNER 06: TOP -->
-    <div class="ad-banner-full">
-        <div class="ad-box ad-desktop">{% include /ads/banner/06.html %}</div>
-        <div class="ad-box ad-mobile">{% include /ads/banner/04.html %}</div>
-    </div>
-
-    <!-- DESKTOP NAV -->
-    <nav class="desktop-nav">
-        <a href="/">Home</a>
-        <a href="/contact/">Contact</a>
-        <a href="/privacy-policy/">Privacy</a>
-        <a href="/terms-and-conditions/">Terms</a>
-    </nav>
-
-    <!-- ==========================================
-        AMBIL 50 POSTINGAN KATEGORI "indo02"
-        ========================================== -->
-    {% assign all_posts = site.categories['indo02'] | slice: 0, 50 %}
-
-    <!-- MAIN CONTENT -->
-    <div class="main-content">
-
-        {% if all_posts.size > 0 %}
-
-        <!-- ========== HERO: POST 0 (16:9) ========== -->
-        {% assign hero_post = all_posts | first %}
-        <section class="hero-section">
-            <article class="hero-card">
-                <a href="{{ hero_post.url }}">
-                    {% if hero_post.image %}
-                        <img src="{{ hero_post.image | relative_url }}" alt="{{ hero_post.title }}" loading="eager">
-                    {% endif %}
-                    <div class="hero-overlay">
-                        <span class="hero-badge">Featured</span>
-                        <h2>{{ hero_post.title }}</h2>
-                        {% assign hero_desc = hero_post.content | split: '<p>' | first %}
-                        <div class="spo">{{ hero_desc }}</div>
-                    </div>
-                </a>
-            </article>
-        </section>
-
-        <!-- BANNER 01 -->
-        <div class="ad-banner-full">
-            <div class="ad-box ad-desktop">{% include /ads/banner/01.html %}</div>
-            <div class="ad-box ad-mobile">{% include /ads/banner/04.html %}</div>
-        </div>
-
-        <!-- ========== TRENDING NOW: POST 1-10 (3:4 portrait scroll) ========== -->
-        {% assign trending = all_posts | slice: 1, 10 %}
-        {% if trending.size > 0 %}
-        <div class="section-header">
-            <h2><span class="icon-dot"></span> Trending Now</h2>
-        </div>
-        <section class="scroll-section">
-            <div class="scroll-row">
-                {% for post in trending %}
-                <article class="scroll-card">
-                    <a href="{{ post.url }}">
-                        {% if post.image %}
-                            <img src="{{ post.image | relative_url }}" alt="{{ post.title }}" loading="lazy">
-                        {% endif %}
-                        <div class="scroll-card-body">
-                            <h3>{{ post.title }}</h3>
-                            {% assign scroll_desc = post.content | split: '<p>' | first %}
-                            <div class="spo">{{ scroll_desc }}</div>
-                        </div>
-                    </a>
-                </article>
-                {% endfor %}
-            </div>
-        </section>
-        {% endif %}
-
-        <!-- BANNER 02 -->
-        <div class="ad-native" style="padding:0 12px;">
-            <div class="ad-box ad-both">{% include /ads/banner/02.html %}</div>
-        </div>
-
-        <!-- ========== LATEST: POST 11-30 (1:1 square grid) ========== -->
-        {% assign latest = all_posts | slice: 11, 20 %}
-        {% if latest.size > 0 %}
-        <div class="section-header">
-            <h2><span class="icon-dot"></span> Latest</h2>
-        </div>
-        <section class="grid-section">
-            <div class="grid-masonry">
-                {% for post in latest %}
-                    {% assign ad_pos = forloop.index %}
-                    <article class="grid-card">
-                        <a href="{{ post.url }}">
-                            {% if post.image %}
-                                <img src="{{ post.image | relative_url }}" alt="{{ post.title }}" loading="lazy">
-                            {% endif %}
-                            <div class="grid-card-overlay">
-                                <h3>{{ post.title }}</h3>
-                                {% assign grid_desc = post.content | split: '<p>' | first %}
-                                <div class="spo">{{ grid_desc }}</div>
-                                <span>{{ post.date | date: "%b %d, %Y" }}</span>
-                            </div>
-                        </a>
-                    </article>
-                    {% assign mod = ad_pos | modulo: 5 %}
-                    {% if mod == 0 %}
-                    <div class="ad-native-card">
-                        <div class="ad-box ad-both">{% include /ads/banner/03.html %}</div>
-                    </div>
-                    {% endif %}
-                {% endfor %}
-            </div>
-        </section>
-        {% endif %}
-
-        <!-- BANNER 08 -->
-        <div class="ad-banner-full">
-            <div class="ad-box ad-both">{% include /ads/banner/08.html %}</div>
-        </div>
-
-        <!-- ========== YOU MAY LIKE: POST 31-49 (3:4 portrait scroll) ========== -->
-        {% assign more = all_posts | slice: 31, 19 %}
-        {% if more.size > 0 %}
-        <div class="section-header">
-            <h2><span class="icon-dot"></span> You May Like</h2>
-        </div>
-        <section class="scroll-section">
-            <div class="scroll-row">
-                {% for post in more %}
-                <article class="scroll-card">
-                    <a href="{{ post.url }}">
-                        {% if post.image %}
-                            <img src="{{ post.image | relative_url }}" alt="{{ post.title }}" loading="lazy">
-                        {% endif %}
-                        <div class="scroll-card-body">
-                            <h3>{{ post.title }}</h3>
-                            {% assign more_desc = post.content | split: '<p>' | first %}
-                            <div class="spo">{{ more_desc }}</div>
-                        </div>
-                    </a>
-                </article>
-                {% endfor %}
-            </div>
-        </section>
-        {% endif %}
-
-        {% else %}
-        <div class="empty-section" style="margin-top:60px;">
-            <p>🚫 No posts found in category <strong>indo02</strong></p>
-        </div>
-        {% endif %}
-
-    </div>
-
-    <!-- BANNER 07: BOTTOM -->
-    <div class="ad-banner-full">
-        <div class="ad-box ad-desktop">{% include /ads/banner/07.html %}</div>
-        <div class="ad-box ad-mobile">{% include /ads/banner/04.html %}</div>
-    </div>
-
-    {% include /ads/gobloggugel/sosmed.html %}
+{% include /ads/gobloggugel/default.html %}
     {% include footer.html %}
 
-</body>
+
+</div></body>
 </html>
-    
